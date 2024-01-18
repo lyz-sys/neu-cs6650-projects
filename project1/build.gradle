@@ -1,0 +1,42 @@
+plugins {
+    id 'java'
+    id 'war'
+    id 'application'
+}
+
+sourceSets {
+    main {
+        java {
+            srcDirs 'src/main/java'
+        }
+        resources {
+            srcDirs 'src/main/resources'
+        }
+    }
+
+    test {
+        java {
+            srcDirs 'src/test/java'
+        }
+        resources {
+            srcDirs 'src/test/resources'
+        }
+    }
+}
+
+repositories {
+    mavenCentral() 
+}
+
+dependencies {
+    implementation 'com.google.code.gson:gson:2.8.8'
+    implementation 'javax.servlet:javax.servlet-api:4.0.1'
+}
+
+war {
+    webAppDirName = 'src/main/java/webapp'
+}
+
+application {
+    // mainClassName = 'webapp.Servlet'
+}
