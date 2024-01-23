@@ -4,6 +4,9 @@ plugins {
     id 'application'
 }
 
+sourceCompatibility = '11'
+targetCompatibility = '11'
+
 sourceSets {
     main {
         java {
@@ -34,7 +37,7 @@ dependencies {
 }
 
 war {
-    webAppDirName = 'src/main/java/webapp'
+    webAppDirName = 'src/main/java/'
 }
 
 application {
