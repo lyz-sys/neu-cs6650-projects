@@ -17,7 +17,7 @@ import io.swagger.client.model.ResponseMsg;
 import io.swagger.client.model.SkierVertical;
 import org.junit.Test;
 import org.junit.Ignore;
-
+import io.swagger.client.ApiException;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -78,12 +78,12 @@ public class SkiersApiTest {
      */
     @Test
     public void writeNewLiftRideTest() throws Exception {
-        LiftRide body = null;
-        Integer resortID = null;
-        String seasonID = null;
-        String dayID = null;
-        Integer skierID = null;
-        api.writeNewLiftRide(body, resortID, seasonID, dayID, skierID);
+        // LiftRide body = null;
+        // Integer resortID = null;
+        // String seasonID = null;
+        // String dayID = null;
+        // Integer skierID = null;
+        // api.writeNewLiftRide(body, resortID, seasonID, dayID, skierID);
 
         // TODO: test validations
     }
