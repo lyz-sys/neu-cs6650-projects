@@ -17,7 +17,7 @@ public class SkierLiftRideEvent {
         this.resortID = ThreadLocalRandom.current().nextInt(1, 11);
         this.liftID = ThreadLocalRandom.current().nextInt(1, 41);
         this.time = ThreadLocalRandom.current().nextInt(1, 361);
-        this.body = new LiftRide(); 
+        this.body = new LiftRide();
         body.setTime(time);
         body.setLiftID(liftID);
     }
@@ -44,17 +44,16 @@ public class SkierLiftRideEvent {
         return body;
     }
 
-    // Function to generate POST request data as a String
-    public String generatePostData() {
-        // Implement the format of POST request data as required.
-        // Example: "skierID=123&resortID=5&liftID=20&seasonID=2024&dayID=1&time=120"
-        return String.format("skierID=%d&resortID=%d&liftID=%d&seasonID=%d&dayID=%d&time=%d",
-                             skierID, resortID, liftID, seasonID, dayID, time);
-    }
-
-    // Optionally, override toString method for easy printing
     @Override
     public String toString() {
-        return generatePostData();
+        return "SkierLiftRideEvent{" +
+                "skierID=" + skierID +
+                ", resortID=" + resortID +
+                ", liftID=" + liftID +
+                ", time=" + time +
+                ", body=" + body +
+                ", seasonID='" + seasonID + '\'' +
+                ", dayID='" + dayID + '\'' +
+                '}';
     }
 }

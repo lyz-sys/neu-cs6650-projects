@@ -20,6 +20,7 @@ import org.junit.Ignore;
 
 import io.swagger.client.ApiClient;
 import io.swagger.client.ApiException;
+import io.swagger.client.ApiResponse;
 import io.swagger.client.P1Part1;
 
 import java.util.ArrayList;
@@ -42,7 +43,7 @@ public class MyTest {
     @Ignore
     @Test
     public void writeNewLiftRideTest() throws Exception {
-        SkiersApi api = new SkiersApi(new ApiClient().setBasePath("http://35.167.101.115:8080/project1/"));
+        SkiersApi api = new SkiersApi(new ApiClient().setBasePath("http://35.91.207.31:8080/project1/"));
 
         LiftRide body = new LiftRide(); // LiftRide | Specify new Season value
         Integer resortID = 56; // Integer | ID of the resort the skier is at
@@ -50,14 +51,16 @@ public class MyTest {
         String dayID = "100"; // String | ID number of ski day in the ski season
         Integer skierID = 56; // Integer | ID of the skier riding the lift
         try {
-            api.writeNewLiftRide(body, resortID, seasonID, dayID, skierID);
+            ApiResponse<Void> response = api.writeNewLiftRideWithHttpInfo(body, resortID, seasonID, dayID, skierID);
             System.out.println("Success!");
+            System.out.println(response.getHeaders());
         } catch (ApiException e) {
             System.err.println("Exception when calling SkiersApi#writeNewLiftRide");
             e.printStackTrace();
         }
     }
 
+    @Ignore
     @Test
     public void runProject1Part1() {
         P1Part1.main(null);
