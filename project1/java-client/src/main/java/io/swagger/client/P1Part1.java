@@ -13,14 +13,15 @@ import org.apache.logging.log4j.Logger;
  */
 public class P1Part1 {
     private static final Logger logger = LogManager.getLogger(P1Part1.class);
-
     private static final int MAX_EVENTS = 200000;
     private static final SkiersApi api = new SkiersApi(
-            new ApiClient().setBasePath("http://35.91.207.31:8080/project1/")); // adjust the IP address as needed for
-                                                                                // your server
+            new ApiClient().setBasePath("http://35.91.207.31:8080/project1/"));
+    private static final Object lock = new Object();
+    private static int successfulCount = 0;
+    private static int unsuccessfulCount = 0;
 
     public static void main(String[] args) {
-        // The shared queue for events
+        long startTime = System.currentTimeMillis();
         BlockingQueue<SkierLiftRideEvent> eventQueue = new LinkedBlockingQueue<>(MAX_EVENTS);
         List<Thread> threadList = new ArrayList<>();
 
@@ -53,12 +54,20 @@ public class P1Part1 {
                             }
 
                             if (success) {
+                                synchronized(lock) {
+                                    successfulCount++;
+                                }
                                 logger.info("Success! Received response code: " + response.getStatusCode());
                             } else {
+                                synchronized(lock) {
+                                    unsuccessfulCount++;
+                                }
                                 logger.info("Received non-success response code: " + response.getStatusCode());
                             }
                         } catch (ApiException e) {
                             logger.info("Exception when calling SkiersApi#writeNewLiftRide");
+                            handleApiException(e);
+                            
                             e.printStackTrace();
                         }
                         // Handle the response, and immediately continue to the next iteration
@@ -79,7 +88,9 @@ public class P1Part1 {
             postingThread.start();
         }
 
-        // Make sure to handle thread interruption, joining, and proper shutdown
+        // Todo: handle the rest of the requests; little law implementation, apiexception handling
+
+        // Wait for all threads to finish
         for (Thread thread : threadList) {
             try {
                 thread.join();
@@ -88,5 +99,39 @@ public class P1Part1 {
                 break; // Exit the loop if the thread is interrupted
             }
         }
+
+        logger.info("Successful requests: {}", successfulCount);
+        logger.info("Unsuccessful requests: {}", unsuccessfulCount);
+
+        // Calculate total run time
+        long endTime = System.currentTimeMillis();
+        double wallTimeInSeconds = (endTime - startTime) / 1000.0;
+
+        logger.info("Total run time: {} s", wallTimeInSeconds);
+        logger.info("Total throughput in requests per second: {}", successfulCount/wallTimeInSeconds);
+    }
+
+    private void handleRequests(int numThreads, int numRequests) {
+
+    }
+
+    private static void handleApiException(ApiException e) {
+        logger.error("API Exception occurred: " + e.getMessage());
+    
+        // Example: Check HTTP status code
+        int statusCode = e.getCode();
+        switch (statusCode) {
+            case 400: // Bad Request
+                // Specific handling for bad request
+                break;
+            case 500: // Internal Server Error
+                // Retry logic or other handling
+                break;
+            default:
+                // General handling for other codes
+        }
+    
+        // Log additional details if available
+        logger.info(statusCode);
     }
 }
