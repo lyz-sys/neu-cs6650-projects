@@ -23,7 +23,7 @@ public class Driver {
     private static List<Thread> threadList = new ArrayList<>();
     private static List<SendPostRequestTask> sendPostRequestTaskList = new ArrayList<>();
     private static final SkiersApi api = new SkiersApi(
-            new ApiClient().setBasePath("http://35.86.109.117:8080/project1/"));
+            new ApiClient().setBasePath("http://52.42.224.136:8080/project1/"));
 
     public static void main(String[] args) {
         long startTime;
@@ -57,7 +57,7 @@ public class Driver {
 
         startTime = System.currentTimeMillis();
 
-        // task 1
+        // task 1: handle 32000 events using 32 threads
         for (int i = 0; i < 32; i++) {
             SendPostRequestTask task = new SendPostRequestTask(1000, eventQueue, api);
             Thread postingThread = new Thread(task);
@@ -66,9 +66,9 @@ public class Driver {
             postingThread.start();
         }
 
-        // task 2
-        for (int i = 0; i < 168; i++) {
-            SendPostRequestTask task = new SendPostRequestTask(1000, eventQueue, api);
+        // task 2: handle 168000 events using any threads
+        for (int i = 0; i < 1680; i++) {
+            SendPostRequestTask task = new SendPostRequestTask(100, eventQueue, api);
             Thread postingThread = new Thread(task);
             threadList.add(postingThread);
             sendPostRequestTaskList.add(task);

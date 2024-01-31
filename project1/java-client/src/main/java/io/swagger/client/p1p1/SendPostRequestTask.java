@@ -25,52 +25,68 @@ public class SendPostRequestTask implements Runnable {
         this.api = api;
     }
 
+    public int getSuccessfulCount() {
+        return successfulCount;
+    }
+
+    public int getUnsuccessfulCount() {
+        return unsuccessfulCount;
+    }
+
     @Override
     public void run() {
-        for (int j = 0; j < numOfRequests; j++) {
-            SkierLiftRideEvent event = eventQueue.poll(); // Non-blocking operation, but you should handle the
-                                                          // possibility of null
-            if (event != null) {
-                try {
-                    boolean success = false;
-                    ApiResponse<Void> response = null;
-                    for (int k = 0; k < 5; k++) {
-                        // Make the POST request and receive the response
-                        response = api.writeNewLiftRideWithHttpInfo(
-                                event.getBody(), event.getResortID(), event.getSeasonID(), event.getDayID(),
-                                event.getSkierID());
-                        // Check the response code
-                        if (response.getStatusCode() == 201) {
-                            success = true;
-                            break;
-                        }
-                    }
+        for (int i = 0; i < numOfRequests; i++) {
+            processEvent();
+        }
+    }
 
-                    if (success) {
-                        successfulCount++;
-                        logger.info("Success! Received response code: " + response.getStatusCode());
-                    } else {
-                        unsuccessfulCount++;
-                        logger.info("Received non-success response code: " + response.getStatusCode());
-                    }
-                } catch (ApiException e) {
-                    logger.info("Exception when calling SkiersApi#writeNewLiftRide");
-                    handleApiException(e);
+    private void processEvent() {
+        SkierLiftRideEvent event = eventQueue.poll();
+        if (event == null) {
+            handleEmptyQueue();
+            return;
+        }
 
-                    e.printStackTrace();
-                }
-                // Handle the response, and immediately continue to the next iteration
-            } else {
-                logger.info("not enough events in the queue");
+        boolean success = sendRequestsUntilSuccessful(event);
+        updateCountsAndLog(success);
+    }
 
-                // Handle the possibility of null, such as waiting or retrying
-                try {
-                    Thread.sleep(100); // Wait for a while before retrying
-                } catch (InterruptedException e) {
-                    Thread.currentThread().interrupt(); // Restore the interrupted status
-                    break; // Exit the loop if the thread is interrupted
-                }
+    private boolean sendRequestsUntilSuccessful(SkierLiftRideEvent event) {
+        for (int j = 0; j < 5; j++) {
+            if (attemptPostRequest(api, event)) {
+                return true;
             }
+        }
+        return false;
+    }
+
+    private void handleEmptyQueue() {
+        logger.info("not enough events in the queue");
+        try {
+            Thread.sleep(100); // Wait for a while before retrying
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt(); // Restore the interrupted status
+        }
+    }
+
+    private void updateCountsAndLog(boolean success) {
+        if (success) {
+            successfulCount++;
+            logger.info("Success!");
+        } else {
+            unsuccessfulCount++;
+            logger.info("Received non-success response or ApiException occurred");
+        }
+    }
+
+    private boolean attemptPostRequest(SkiersApi api, SkierLiftRideEvent event) {
+        try {
+            ApiResponse<Void> response = api.writeNewLiftRideWithHttpInfo(
+                    event.getBody(), event.getResortID(), event.getSeasonID(), event.getDayID(), event.getSkierID());
+            return response.getStatusCode() == 201;
+        } catch (ApiException e) {
+            handleApiException(e);
+            return false;
         }
     }
 
@@ -92,13 +108,5 @@ public class SendPostRequestTask implements Runnable {
 
         // Log additional details if available
         logger.info(statusCode);
-    }
-
-    public int getSuccessfulCount() {
-        return successfulCount;
-    }
-
-    public int getUnsuccessfulCount() {
-        return unsuccessfulCount;
     }
 }
