@@ -1,4 +1,4 @@
-package io.swagger.client.p1p1;
+package p1p1;
 
 import java.util.List;
 import java.util.ArrayList;
@@ -27,7 +27,6 @@ public class Driver {
 
     public static void main(String[] args) {
         long startTime;
-        long endTime;
 
         // // warm up throuput testing
         // for (int i = 0; i < 10000; i++) {
@@ -66,7 +65,7 @@ public class Driver {
             postingThread.start();
         }
 
-        // task 2: handle 168000 events using any threads
+        // task 2: handle 168000 events using any threads; 1680:100; 840:200
         for (int i = 0; i < 1680; i++) {
             SendPostRequestTask task = new SendPostRequestTask(100, eventQueue, api);
             Thread postingThread = new Thread(task);
@@ -98,12 +97,10 @@ public class Driver {
         logger.info("Successful requests: {}", successfulCount);
         logger.info("Unsuccessful requests: {}", unsuccessfulCount);
 
-        // Calculate total run time
-        endTime = System.currentTimeMillis();
-        double wallTimeInSeconds = (endTime - startTime) / 1000.0;
+        double wallTimeInSeconds = (System.currentTimeMillis() - startTime) / 1000.0;
 
-        logger.info("Total run time: {} s", wallTimeInSeconds);
-        logger.info("Total throughput in requests per second: {}", successfulCount /
+        logger.info("Total run time: {} second", wallTimeInSeconds);
+        logger.info("Total throughput: {} requests/second", successfulCount /
                 wallTimeInSeconds);
     }
 }
