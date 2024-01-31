@@ -65,7 +65,7 @@
             </execution>
         </executions>
         <configuration>
-            <mainClass>io.swagger.client.P1Part1</mainClass>
+            <mainClass>io.swagger.client.p1p1.Driver</mainClass>
             <!-- You can also specify command line arguments -->
             <!--<arguments>-->
             <!--    <argument>arg1</argument>-->
