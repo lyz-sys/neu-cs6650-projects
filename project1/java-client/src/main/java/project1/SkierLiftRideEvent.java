@@ -1,4 +1,4 @@
-package p1p1;
+package project1;
 
 import java.util.concurrent.ThreadLocalRandom;
 import io.swagger.client.model.LiftRide;

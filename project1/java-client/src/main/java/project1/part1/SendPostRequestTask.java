@@ -1,4 +1,4 @@
-package p1p1;
+package project1.part1;
 
 import java.util.List;
 import java.util.ArrayList;
@@ -10,19 +10,21 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import io.swagger.client.ApiException;
 import io.swagger.client.ApiResponse;
+import io.swagger.client.ApiClient;
+import project1.SkierLiftRideEvent;
 
 public class SendPostRequestTask implements Runnable {
     private static final Logger logger = LogManager.getLogger(SendPostRequestTask.class);
-    private final SkiersApi api;
     private int numOfRequests;
     private BlockingQueue<SkierLiftRideEvent> eventQueue;
     private int successfulCount = 0;
     private int unsuccessfulCount = 0;
+    private final SkiersApi api = new SkiersApi(
+        new ApiClient().setBasePath("http://34.220.101.212:8080/project1/"));
 
-    public SendPostRequestTask(int numOfRequests, BlockingQueue<SkierLiftRideEvent> eventQueue, SkiersApi api) {
+    public SendPostRequestTask(int numOfRequests, BlockingQueue<SkierLiftRideEvent> eventQueue) {
         this.numOfRequests = numOfRequests;
         this.eventQueue = eventQueue;
-        this.api = api;
     }
 
     public int getSuccessfulCount() {

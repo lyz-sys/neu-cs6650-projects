@@ -1,15 +1,19 @@
-package p1p1;
+package project1.part1;
 
 import java.util.List;
 import java.util.ArrayList;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.TimeUnit;
 import io.swagger.client.api.SkiersApi;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import io.swagger.client.ApiException;
 import io.swagger.client.ApiClient;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import project1.SkierLiftRideEvent;
 
 /**
  * Driver class for Part 1 of Project 1.
@@ -22,8 +26,6 @@ public class Driver {
     private static BlockingQueue<SkierLiftRideEvent> eventQueue = new LinkedBlockingQueue<>(MAX_EVENTS);
     private static List<Thread> threadList = new ArrayList<>();
     private static List<SendPostRequestTask> sendPostRequestTaskList = new ArrayList<>();
-    private static final SkiersApi api = new SkiersApi(
-            new ApiClient().setBasePath("http://52.42.224.136:8080/project1/"));
 
     public static void main(String[] args) {
         long startTime;
@@ -58,16 +60,16 @@ public class Driver {
 
         // task 1: handle 32000 events using 32 threads
         for (int i = 0; i < 32; i++) {
-            SendPostRequestTask task = new SendPostRequestTask(1000, eventQueue, api);
+            SendPostRequestTask task = new SendPostRequestTask(1000, eventQueue);
             Thread postingThread = new Thread(task);
             threadList.add(postingThread);
             sendPostRequestTaskList.add(task);
             postingThread.start();
         }
 
-        // task 2: handle 168000 events using any threads; 1680:100; 840:200
-        for (int i = 0; i < 1680; i++) {
-            SendPostRequestTask task = new SendPostRequestTask(100, eventQueue, api);
+        // task 2: handle rest 168000 events using any threads
+        for (int i = 0; i < 168; i++) {
+            SendPostRequestTask task = new SendPostRequestTask(1000, eventQueue);
             Thread postingThread = new Thread(task);
             threadList.add(postingThread);
             sendPostRequestTaskList.add(task);
